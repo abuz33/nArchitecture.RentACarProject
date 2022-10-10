@@ -12,8 +12,8 @@ using Persistence.Contexts;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20220928112131_all")]
-    partial class all
+    [Migration("20221010141143_added_seeded_data")]
+    partial class added_seeded_data
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -470,15 +470,6 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("CorporateCustomers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CompanyName = "Ahmet Çetinkaya",
-                            CustomerId = 2,
-                            TaxNo = "54154512"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Customer", b =>
@@ -605,16 +596,6 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("IndividualCustomers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CustomerId = 1,
-                            FirstName = "Ahmet",
-                            LastName = "Çetinkaya",
-                            NationalIdentity = "123123123123"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Invoice", b =>
@@ -629,7 +610,7 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2022, 9, 28, 14, 21, 31, 28, DateTimeKind.Local).AddTicks(8708))
+                        .HasDefaultValue(new DateTime(2022, 10, 10, 16, 11, 43, 17, DateTimeKind.Local).AddTicks(4239))
                         .HasColumnName("CreatedDate");
 
                     b.Property<int>("CustomerId")
@@ -667,23 +648,23 @@ namespace Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2022, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            CreatedDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             CustomerId = 1,
                             No = "123123",
-                            RentalEndDate = new DateTime(2022, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            RentalEndDate = new DateTime(2022, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             RentalPrice = 1000m,
-                            RentalStartDate = new DateTime(2022, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            RentalStartDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             TotalRentalDate = (short)2
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2022, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            CreatedDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             CustomerId = 1,
                             No = "123123",
-                            RentalEndDate = new DateTime(2022, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            RentalEndDate = new DateTime(2022, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             RentalPrice = 2000m,
-                            RentalStartDate = new DateTime(2022, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            RentalStartDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             TotalRentalDate = (short)2
                         });
                 });
@@ -807,9 +788,9 @@ namespace Persistence.Migrations
                             Id = 1,
                             CarId = 2,
                             CustomerId = 1,
-                            RentEndDate = new DateTime(2022, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            RentEndDate = new DateTime(2022, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             RentEndKilometer = 1200,
-                            RentStartDate = new DateTime(2022, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            RentStartDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             RentStartKilometer = 1000
                         },
                         new
@@ -817,9 +798,9 @@ namespace Persistence.Migrations
                             Id = 2,
                             CarId = 1,
                             CustomerId = 2,
-                            RentEndDate = new DateTime(2022, 9, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            RentEndDate = new DateTime(2022, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
                             RentEndKilometer = 1200,
-                            RentStartDate = new DateTime(2022, 9, 28, 0, 0, 0, 0, DateTimeKind.Local),
+                            RentStartDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
                             RentStartKilometer = 1000
                         });
                 });

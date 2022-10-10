@@ -220,7 +220,7 @@ public class BaseDbContext : DbContext
             //r.HasOne(r => r.RentStartRentalBranch);
             //r.HasOne(r => r.RentEndRentalBranch);
             r.HasMany(r => r.RentalsAdditionalServices);
-       
+
         });
 
         modelBuilder.Entity<RentalsAdditionalService>(r =>
@@ -239,7 +239,7 @@ public class BaseDbContext : DbContext
             r.Property(r => r.Id).HasColumnName("Id");
             r.Property(r => r.City).HasColumnName("City");
             r.HasMany(r => r.Cars);
-            
+
         });
 
         modelBuilder.Entity<OperationClaim>(o =>
@@ -295,30 +295,14 @@ public class BaseDbContext : DbContext
         Brand[] brandSeeds = { new(1, "BMW"), new(2, "Mercedes") };
         modelBuilder.Entity<Brand>().HasData(brandSeeds);
 
-        Car[] carSeeds =
-        {
-            new(1, 1, 1, 1, CarState.Available, 1000, 2018, "07ABC07", 500),
-            new(2, 2, 2, 2, CarState.Rented, 1000, 2018, "15ABC15", 1100)
-        };
-        modelBuilder.Entity<Car>().HasData(carSeeds);
-
         Color[] colorSeeds = { new(1, "Red"), new(2, "Blue") };
         modelBuilder.Entity<Color>().HasData(colorSeeds);
-
-        CorporateCustomer[] corporateCustomers = { new(1, 2, "Ahmet Çetinkaya", "54154512") };
-        modelBuilder.Entity<CorporateCustomer>().HasData(corporateCustomers);
-
-        FindeksCreditRate[] findeksCreditRates = { new(1, 1, 1000), new(2, 2, 1900) };
-        modelBuilder.Entity<FindeksCreditRate>().HasData(findeksCreditRates);
 
         Fuel[] fuelSeeds = { new(1, "Diesel"), new(2, "Electric") };
         modelBuilder.Entity<Fuel>().HasData(fuelSeeds);
 
-        IndividualCustomer[] individualCustomers = { new(1, 1, "Ahmet", "Çetinkaya", "123123123123") };
-        modelBuilder.Entity<IndividualCustomer>().HasData(individualCustomers);
-
-        Model[] modelSeeds = { new(1, 1, 1, 2, "418i", 1000, ""), new(2, 2, 2, 1, "CLA 180D", 600, "") };
-        modelBuilder.Entity<Model>().HasData(modelSeeds);
+        FindeksCreditRate[] findeksCreditRates = { new(1, 1, 1000), new(2, 2, 1900) };
+        modelBuilder.Entity<FindeksCreditRate>().HasData(findeksCreditRates);
 
         Rental[] rentalSeeds =
         {
@@ -342,5 +326,15 @@ public class BaseDbContext : DbContext
 
         Transmission[] transmissionsSeeds = { new(1, "Manuel"), new(2, "Automatic") };
         modelBuilder.Entity<Transmission>().HasData(transmissionsSeeds);
+        
+        Car[] carSeeds =
+        {
+            new(1, 1, 1, 1, CarState.Available, 1000, 2018, "07ABC07", 500),
+            new(2, 2, 2, 2, CarState.Rented, 1000, 2018, "15ABC15", 1100)
+        };
+        modelBuilder.Entity<Car>().HasData(carSeeds);
+
+        Model[] modelSeeds = { new(1, 1, 1, 2, "418i", 1000, ""), new(2, 2, 2, 1, "CLA 180D", 600, "") };
+        modelBuilder.Entity<Model>().HasData(modelSeeds);
     }
 }

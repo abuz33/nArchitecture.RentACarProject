@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence.Contexts;
 
@@ -11,9 +12,10 @@ using Persistence.Contexts;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221010134411_initial_migration")]
+    partial class initial_migration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,13 +68,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OperationClaims", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("Core.Security.Entities.OtpAuthenticator", b =>
@@ -253,20 +248,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AdditionalServices", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DailyPrice = 200m,
-                            Name = "Baby Seat"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DailyPrice = 300m,
-                            Name = "Scooter"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Brand", b =>
@@ -286,18 +267,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Brands", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "BMW"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Mercedes"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Car", b =>
@@ -350,32 +319,6 @@ namespace Persistence.Migrations
                     b.HasIndex("RentalBranchId");
 
                     b.ToTable("Cars", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CarState = 1,
-                            ColorId = 1,
-                            Kilometer = 1000,
-                            MinFindeksCreditRate = (short)500,
-                            ModelId = 1,
-                            ModelYear = (short)2018,
-                            Plate = "07ABC07",
-                            RentalBranchId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CarState = 2,
-                            ColorId = 2,
-                            Kilometer = 1000,
-                            MinFindeksCreditRate = (short)1100,
-                            ModelId = 2,
-                            ModelYear = (short)2018,
-                            Plate = "15ABC15",
-                            RentalBranchId = 2
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.CarDamage", b =>
@@ -425,18 +368,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Colors", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Red"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Blue"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.CorporateCustomer", b =>
@@ -513,20 +444,6 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("FindeksCreditRates", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CustomerId = 1,
-                            Score = (short)1000
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CustomerId = 2,
-                            Score = (short)1900
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Fuel", b =>
@@ -546,18 +463,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Fuels", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Diesel"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Electric"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.IndividualCustomer", b =>
@@ -608,7 +513,7 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2022, 10, 10, 16, 11, 43, 17, DateTimeKind.Local).AddTicks(4239))
+                        .HasDefaultValue(new DateTime(2022, 10, 10, 15, 44, 11, 424, DateTimeKind.Local).AddTicks(7322))
                         .HasColumnName("CreatedDate");
 
                     b.Property<int>("CustomerId")
@@ -641,30 +546,6 @@ namespace Persistence.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Invoices", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
-                            CustomerId = 1,
-                            No = "123123",
-                            RentalEndDate = new DateTime(2022, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
-                            RentalPrice = 1000m,
-                            RentalStartDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
-                            TotalRentalDate = (short)2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
-                            CustomerId = 1,
-                            No = "123123",
-                            RentalEndDate = new DateTime(2022, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
-                            RentalPrice = 2000m,
-                            RentalStartDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
-                            TotalRentalDate = (short)2
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Model", b =>
@@ -711,28 +592,6 @@ namespace Persistence.Migrations
                     b.HasIndex("TransmissionId");
 
                     b.ToTable("Models", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BrandId = 1,
-                            DailyPrice = 1000m,
-                            FuelId = 1,
-                            ImageUrl = "",
-                            Name = "418i",
-                            TransmissionId = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BrandId = 2,
-                            DailyPrice = 600m,
-                            FuelId = 2,
-                            ImageUrl = "",
-                            Name = "CLA 180D",
-                            TransmissionId = 1
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Rental", b =>
@@ -779,28 +638,6 @@ namespace Persistence.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Rentals", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CarId = 2,
-                            CustomerId = 1,
-                            RentEndDate = new DateTime(2022, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
-                            RentEndKilometer = 1200,
-                            RentStartDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
-                            RentStartKilometer = 1000
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CarId = 1,
-                            CustomerId = 2,
-                            RentEndDate = new DateTime(2022, 10, 12, 0, 0, 0, 0, DateTimeKind.Local),
-                            RentEndKilometer = 1200,
-                            RentStartDate = new DateTime(2022, 10, 10, 0, 0, 0, 0, DateTimeKind.Local),
-                            RentStartKilometer = 1000
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.RentalBranch", b =>
@@ -819,18 +656,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RentalBranches", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            City = 6
-                        },
-                        new
-                        {
-                            Id = 2,
-                            City = 7
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.RentalsAdditionalService", b =>
@@ -876,18 +701,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Transmissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Manuel"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Automatic"
-                        });
                 });
 
             modelBuilder.Entity("Core.Security.Entities.EmailAuthenticator", b =>

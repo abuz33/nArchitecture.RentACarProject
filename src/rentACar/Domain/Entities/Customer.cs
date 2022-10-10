@@ -14,7 +14,6 @@ public class Customer : Entity
     public virtual ICollection<Invoice> Invoices { get; set; }
     public virtual ICollection<Rental> Rentals { get; set; }
 
-
     public Customer()
     {
         Invoices = new HashSet<Invoice>();
