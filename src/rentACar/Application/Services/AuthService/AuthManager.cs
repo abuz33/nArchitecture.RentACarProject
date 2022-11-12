@@ -1,7 +1,6 @@
 ﻿using Application.Services.Repositories;
 using Core.CrossCuttingConcerns.Exceptions;
 using Core.Mailing;
-using Core.Persistence.Paging;
 using Core.Security.EmailAuthenticator;
 using Core.Security.Entities;
 using Core.Security.Enums;
@@ -9,6 +8,7 @@ using Core.Security.JWT;
 using Core.Security.OtpAuthenticator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MimeKit;
 
 namespace Application.Services.AuthService;
 
@@ -44,14 +44,16 @@ public class AuthManager : IAuthService
 
     public async Task<AccessToken> CreateAccessToken(User user)
     {
-        IPaginate<UserOperationClaim> userOperationClaims =
-            await _userOperationClaimRepository.GetListAsync(u => u.UserId == user.Id,
-                                                             include: u =>
-                                                                 u.Include(u => u.OperationClaim)
-            );
-        IList<OperationClaim> operationClaims =
-            userOperationClaims.Items.Select(u => new OperationClaim
-                                                 { Id = u.OperationClaim.Id, Name = u.OperationClaim.Name }).ToList();
+        IList<OperationClaim> operationClaims = await _userOperationClaimRepository
+                .Query()
+                .AsNoTracking()
+                .Where(p => p.UserId == user.Id)
+                .Select(p => new OperationClaim
+                {
+                    Id = p.OperationClaimId,
+                    Name = p.OperationClaim.Name
+                })
+                .ToListAsync();
 
         AccessToken accessToken = _tokenHelper.CreateToken(user, operationClaims);
         return accessToken;
@@ -146,12 +148,12 @@ public class AuthManager : IAuthService
         if (user.AuthenticatorType is AuthenticatorType.Email) await sendAuthenticatorCodeWithEmail(user);
     }
 
-    public async Task VerifyAuthenticatorCode(User user, string AuthenticatorCode)
+    public async Task VerifyAuthenticatorCode(User user, string authenticatorCode)
     {
         if (user.AuthenticatorType is AuthenticatorType.Email)
-            await verifyAuthenticatorCodeWithEmail(user, AuthenticatorCode);
+            await verifyAuthenticatorCodeWithEmail(user, authenticatorCode);
         else if (user.AuthenticatorType is AuthenticatorType.Otp)
-            await verifyAuthenticatorCodeWithOtp(user, AuthenticatorCode);
+            await verifyAuthenticatorCodeWithOtp(user, authenticatorCode);
     }
 
     private async Task sendAuthenticatorCodeWithEmail(User user)
@@ -164,10 +166,14 @@ public class AuthManager : IAuthService
         emailAuthenticator.ActivationKey = authenticatorCode;
         await _emailAuthenticatorRepository.UpdateAsync(emailAuthenticator);
 
+        var toEmailList = new List<MailboxAddress>
+            {
+                new($"{user.FirstName} {user.LastName}",user.Email)
+            };
+
         _mailService.SendMail(new Mail
         {
-            ToEmail = user.Email,
-            ToFullName = $"{user.FirstName} {user.LastName}",
+            ToList = toEmailList,
             Subject = "Authenticator Code - RentACar",
             TextBody = $"Enter your authenticator code: {authenticatorCode}"
         });
