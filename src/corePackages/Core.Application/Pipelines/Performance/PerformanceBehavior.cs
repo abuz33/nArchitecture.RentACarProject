@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using System.Diagnostics;
+using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace Core.Application.Pipelines.Performance;
 
@@ -16,8 +16,7 @@ public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         _stopwatch = stopwatch;
     }
 
-    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
-                                        RequestHandlerDelegate<TResponse> next)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         string requestName = request.GetType().Name;
 
@@ -26,7 +25,7 @@ public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         try
         {
             _stopwatch.Start();
-            response = await next();            
+            response = await next();
         }
         finally
         {
@@ -44,4 +43,3 @@ public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         return response;
     }
 }
-

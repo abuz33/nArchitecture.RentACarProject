@@ -6,7 +6,6 @@ namespace Domain.Entities;
 public class RentalBranch : Entity
 {
     public City City { get; set; }
-   
 
     public virtual ICollection<Car> Cars { get; set; }
 
@@ -15,7 +14,8 @@ public class RentalBranch : Entity
         Cars = new HashSet<Car>();
     }
 
-    public RentalBranch(int id, City city) : this()
+    public RentalBranch(int id, City city)
+        : this()
     {
         Id = id;
         City = city;

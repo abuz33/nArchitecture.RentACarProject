@@ -1,7 +1,7 @@
 ﻿using Application.Features.Models.Constants;
 using Application.Services.Repositories;
 using Core.Application.Rules;
-using Core.CrossCuttingConcerns.Exceptions;
+using Core.CrossCuttingConcerns.Exceptions.Types;
 using Domain.Entities;
 
 namespace Application.Features.Models.Rules;
@@ -17,7 +17,8 @@ public class ModelBusinessRules : BaseBusinessRules
 
     public async Task ModelIdShouldExistWhenSelected(int id)
     {
-        Model? result = await _modelRepository.GetAsync(c => c.Id == id);
-        if (result == null) throw new BusinessException(ModelMessages.ModelNotExists);
+        Model? result = await _modelRepository.GetAsync(predicate: c => c.Id == id, enableTracking: false);
+        if (result == null)
+            throw new BusinessException(ModelsMessages.ModelNotExists);
     }
 }

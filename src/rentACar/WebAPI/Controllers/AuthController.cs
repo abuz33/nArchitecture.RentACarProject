@@ -1,13 +1,12 @@
-﻿using Application.Features.Auths.Commands.EnableEmailAuthenticator;
-using Application.Features.Auths.Commands.EnableOtpAuthenticator;
-using Application.Features.Auths.Commands.Login;
-using Application.Features.Auths.Commands.RefleshToken;
-using Application.Features.Auths.Commands.Register;
-using Application.Features.Auths.Commands.RevokeToken;
-using Application.Features.Auths.Commands.VerifyEmailAuthenticator;
-using Application.Features.Auths.Commands.VerifyOtpAuthenticator;
-using Application.Features.Auths.Dtos;
-using Core.Security.Dtos;
+﻿using Application.Features.Auth.Commands.EnableEmailAuthenticator;
+using Application.Features.Auth.Commands.EnableOtpAuthenticator;
+using Application.Features.Auth.Commands.Login;
+using Application.Features.Auth.Commands.RefleshToken;
+using Application.Features.Auth.Commands.Register;
+using Application.Features.Auth.Commands.RevokeToken;
+using Application.Features.Auth.Commands.VerifyEmailAuthenticator;
+using Application.Features.Auth.Commands.VerifyOtpAuthenticator;
+using Core.Application.Dtos;
 using Core.Security.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -29,54 +28,45 @@ public class AuthController : BaseController
     public async Task<IActionResult> Login([FromBody] UserForLoginDto userForLoginDto)
     {
         LoginCommand loginCommand = new() { UserForLoginDto = userForLoginDto, IPAddress = getIpAddress() };
-        LoggedDto result = await Mediator.Send(loginCommand);
+        LoggedResponse result = await Mediator.Send(loginCommand);
 
-        if (result.RefreshToken is not null) setRefreshTokenToCookie(result.RefreshToken);
+        if (result.RefreshToken is not null)
+            setRefreshTokenToCookie(result.RefreshToken);
 
-        return Ok(result.CreateResponseDto());
+        return Ok(result.ToHttpResponse());
     }
 
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] UserForRegisterDto userForRegisterDto)
     {
         RegisterCommand registerCommand = new() { UserForRegisterDto = userForRegisterDto, IPAddress = getIpAddress() };
-        RegisteredDto result = await Mediator.Send(registerCommand);
+        RegisteredResponse result = await Mediator.Send(registerCommand);
         setRefreshTokenToCookie(result.RefreshToken);
-        return Created("", result.AccessToken);
+        return Created(uri: "", result.AccessToken);
     }
 
     [HttpGet("RefreshToken")]
     public async Task<IActionResult> RefreshToken()
     {
-        RefreshTokenCommand refreshTokenCommand = new()
-            { RefleshToken = getRefreshTokenFromCookies(), IPAddress = getIpAddress() };
-        RefreshedTokensDto result = await Mediator.Send(refreshTokenCommand);
+        RefreshTokenCommand refreshTokenCommand = new() { RefleshToken = getRefreshTokenFromCookies(), IPAddress = getIpAddress() };
+        RefreshedTokensResponse result = await Mediator.Send(refreshTokenCommand);
         setRefreshTokenToCookie(result.RefreshToken);
-        return Created("", result.AccessToken);
+        return Created(uri: "", result.AccessToken);
     }
 
     [HttpPut("RevokeToken")]
-    public async Task<IActionResult> RevokeToken(
-        [FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)]
-        string? refreshToken)
+    public async Task<IActionResult> RevokeToken([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)] string? refreshToken)
     {
-        RevokeTokenCommand revokeTokenCommand = new()
-        {
-            Token = refreshToken ?? getRefreshTokenFromCookies(),
-            IPAddress = getIpAddress()
-        };
-        RevokedTokenDto result = await Mediator.Send(revokeTokenCommand);
+        RevokeTokenCommand revokeTokenCommand = new() { Token = refreshToken ?? getRefreshTokenFromCookies(), IPAddress = getIpAddress() };
+        RevokedTokenResponse result = await Mediator.Send(revokeTokenCommand);
         return Ok(result);
     }
 
     [HttpGet("EnableEmailAuthenticator")]
     public async Task<IActionResult> EnableEmailAuthenticator()
     {
-        EnableEmailAuthenticatorCommand enableEmailAuthenticatorCommand = new()
-        {
-            UserId = getUserIdFromRequest(),
-            VerifyEmailUrlPrefix = $"{_configuration.APIDomain}/Auth/VerifyEmailAuthenticator"
-        };
+        EnableEmailAuthenticatorCommand enableEmailAuthenticatorCommand =
+            new() { UserId = getUserIdFromRequest(), VerifyEmailUrlPrefix = $"{_configuration.APIDomain}/Auth/VerifyEmailAuthenticator" };
         await Mediator.Send(enableEmailAuthenticatorCommand);
 
         return Ok();
@@ -85,26 +75,21 @@ public class AuthController : BaseController
     [HttpGet("EnableOtpAuthenticator")]
     public async Task<IActionResult> EnableOtpAuthenticator()
     {
-        EnableOtpAuthenticatorCommand enableOtpAuthenticatorCommand = new()
-        {
-            UserId = getUserIdFromRequest()
-        };
-        EnabledOtpAuthenticatorDto result = await Mediator.Send(enableOtpAuthenticatorCommand);
+        EnableOtpAuthenticatorCommand enableOtpAuthenticatorCommand = new() { UserId = getUserIdFromRequest() };
+        EnabledOtpAuthenticatorResponse result = await Mediator.Send(enableOtpAuthenticatorCommand);
 
         return Ok(result);
     }
 
     [HttpGet("VerifyEmailAuthenticator")]
-    public async Task<IActionResult> VerifyEmailAuthenticator(
-        [FromQuery] VerifyEmailAuthenticatorCommand verifyEmailAuthenticatorCommand)
+    public async Task<IActionResult> VerifyEmailAuthenticator([FromQuery] VerifyEmailAuthenticatorCommand verifyEmailAuthenticatorCommand)
     {
         await Mediator.Send(verifyEmailAuthenticatorCommand);
         return Ok();
     }
 
     [HttpPost("VerifyOtpAuthenticator")]
-    public async Task<IActionResult> VerifyOtpAuthenticator(
-        [FromBody] string authenticatorCode)
+    public async Task<IActionResult> VerifyOtpAuthenticator([FromBody] string authenticatorCode)
     {
         VerifyOtpAuthenticatorCommand verifyEmailAuthenticatorCommand =
             new() { UserId = getUserIdFromRequest(), ActivationCode = authenticatorCode };
@@ -113,14 +98,11 @@ public class AuthController : BaseController
         return Ok();
     }
 
-    private string? getRefreshTokenFromCookies()
-    {
-        return Request.Cookies["refreshToken"];
-    }
+    private string? getRefreshTokenFromCookies() => Request.Cookies["refreshToken"];
 
     private void setRefreshTokenToCookie(RefreshToken refreshToken)
     {
         CookieOptions cookieOptions = new() { HttpOnly = true, Expires = DateTime.UtcNow.AddDays(7) };
-        Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
+        Response.Cookies.Append(key: "refreshToken", refreshToken.Token, cookieOptions);
     }
 }

@@ -3,57 +3,47 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Infrastructure.Adapters.ImageService
+namespace Infrastructure.Adapters.ImageService;
+
+public class CloudinaryImageServiceAdapter : ImageServiceBase
 {
-    public class CloudinaryImageServiceAdapter : IImageService
+    private readonly Cloudinary _cloudinary;
+
+    public CloudinaryImageServiceAdapter(IConfiguration configuration)
     {
-        private readonly Cloudinary _cloudinary;
+        Account account = configuration.GetSection("CloudinaryAccount").Get<Account>();
+        _cloudinary = new Cloudinary(account);
+    }
 
-        public CloudinaryImageServiceAdapter(IConfiguration configuration)
-        {
-            Account account = configuration.GetSection("CloudinaryAccount").Get<Account>();
-            _cloudinary = new Cloudinary(account);
-        }
+    public override async Task<string> UploadAsync(IFormFile formFile)
+    {
+        await FileMustBeInImageFormat(formFile);
 
-        public string Upload(IFormFile formFile)
-        {
-            ImageUploadParams imageUploadParams = new()
+        ImageUploadParams imageUploadParams =
+            new()
             {
-                File = new(formFile.FileName, formFile.OpenReadStream()),
+                File = new FileDescription(formFile.FileName, stream: formFile.OpenReadStream()),
                 UseFilename = false,
                 UniqueFilename = true,
                 Overwrite = false
             };
-            ImageUploadResult imageUploadResult = _cloudinary.Upload(imageUploadParams);
+        ImageUploadResult imageUploadResult = await _cloudinary.UploadAsync(imageUploadParams);
 
-            return imageUploadResult.Url.ToString();
-        }
+        return imageUploadResult.Url.ToString();
+    }
 
-        public string Update(IFormFile formFile, string imageUrl)
-        {
-            Delete(imageUrl);
-            return Upload(formFile);
-        }
+    public override async Task DeleteAsync(string imageUrl)
+    {
+        DeletionParams deletionParams = new(GetPublicId(imageUrl));
+        await _cloudinary.DestroyAsync(deletionParams);
+    }
 
-        public void Delete(string imageUrl)
-        {
-            DeletionParams deletionParams = new(GetPublicId(imageUrl));
-            _cloudinary.Destroy(deletionParams);
-        }
-
-        private string GetPublicId(string imageUrl)
-        {
-            int startIndex = imageUrl.LastIndexOf('/') + 1;
-            int endIndex = imageUrl.LastIndexOf('.');
-            int length = endIndex - startIndex;
-            return imageUrl.Substring(startIndex, length);
-        }
+    private string GetPublicId(string imageUrl)
+    {
+        int startIndex = imageUrl.LastIndexOf('/') + 1;
+        int endIndex = imageUrl.LastIndexOf('.');
+        int length = endIndex - startIndex;
+        return imageUrl.Substring(startIndex, length);
     }
 }

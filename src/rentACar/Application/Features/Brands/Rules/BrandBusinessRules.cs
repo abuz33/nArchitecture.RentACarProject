@@ -1,7 +1,7 @@
 ﻿using Application.Features.Brands.Constants;
 using Application.Services.Repositories;
 using Core.Application.Rules;
-using Core.CrossCuttingConcerns.Exceptions;
+using Core.CrossCuttingConcerns.Exceptions.Types;
 using Core.Persistence.Paging;
 using Domain.Entities;
 
@@ -16,15 +16,38 @@ public class BrandBusinessRules : BaseBusinessRules
         _brandRepository = brandRepository;
     }
 
+    public void BrandIdShouldExistWhenSelected(Brand? brand)
+    {
+        if (brand == null)
+            throw new BusinessException(BrandsMessages.BrandNotExists);
+    }
+
     public async Task BrandIdShouldExistWhenSelected(int id)
     {
-        Brand? result = await _brandRepository.GetAsync(b => b.Id == id);
-        if (result == null) throw new BusinessException(BrandMessages.BrandNotExists);
+        Brand? brand = await _brandRepository.GetAsync(predicate: b => b.Id == id, enableTracking: false);
+        BrandIdShouldExistWhenSelected(brand);
     }
 
     public async Task BrandNameCanNotBeDuplicatedWhenInserted(string name)
     {
-        IPaginate<Brand> result = await _brandRepository.GetListAsync(b => b.Name == name);
-        if (result.Items.Any()) throw new BusinessException(BrandMessages.BrandNameExists);
+        Brand? result = await _brandRepository.GetAsync(x => string.Equals(x.Name.ToLower(), name.ToLower(), StringComparison.Ordinal));
+        if (result != null)
+            throw new BusinessException(BrandsMessages.BrandNameExists);
+    }
+
+    public async Task BrandNameCanNotBeDuplicatedWhenUpdated(Brand brand)
+    {
+        Brand? result = await _brandRepository.GetAsync(
+            x => x.Id != brand.Id && string.Equals(x.Name.ToLower(), brand.Name.ToLower(), StringComparison.Ordinal)
+        );
+        if (result != null)
+            throw new BusinessException(BrandsMessages.BrandNameExists);
+    }
+
+    public async Task BrandNameListCanNotBeDuplicatedWhenInserted(List<string> nameList)
+    {
+        IPaginate<Brand> result = await _brandRepository.GetListAsync(predicate: b => nameList.Contains(b.Name), enableTracking: false);
+        if (result.Items.Any())
+            throw new BusinessException(BrandsMessages.BrandNameExists);
     }
 }
